@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+    <name>Final Floors Forever</name>
+    <directory>final floors forever</directory>
+    <id>2912638739</id>
+    <description>Alliteration. Past versions of the game allowed you to loop the Chest repeatedly by using the I AM ERROR room. This mod is bringing that idea back and making it a feature of the Chest, Dark Room, and The Void.
+
+[list]
+    [*]Chest / ???
+    [list]
+        [*]A chest and light beam will spawn allowing you to end your run or loop
+        [*]Optionally, a void portal will spawn giving you access to The Void
+    [/list]
+    [*]Dark Room / The Lamb
+    [list]
+        [*]A chest and trapdoor will spawn allowing you to end your run or loop
+        [*]Optionally, a void portal will spawn giving you access to The Void
+    [/list]
+    [*]The Void / Delirium
+    [list]
+        [*]A chest and void portal will spawn allowing you to end your run or loop
+    [/list]
+[/list]
+
+In challenges, trophies will spawn instead of chests.
+
+Mod Config Menu can be used to guarantee that the void portal spawns in the Chest and Dark Room. Otherwise, the normal game probability applies. You can also choose to apply this mod to challenges.</description>
+    <version>1.1</version>
+    <visibility>Public</visibility>
+    <tag id="Lua"/>
+    <tag id="Floors"/>
+    <tag id="Bosses"/>
+    <tag id="Tweaks"/>
+</metadata>
