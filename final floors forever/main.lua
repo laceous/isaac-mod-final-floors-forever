@@ -59,7 +59,6 @@ function mod:onPickupInit(pickup)
   
   local level = game:GetLevel()
   local room = level:GetCurrentRoom()
-  local roomDesc = level:GetCurrentRoomDesc()
   
   if mod:isBlueBabyOrTheLamb() then
     local chestIdx = level:IsAltStage() and 66 or 68
