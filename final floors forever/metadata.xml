@@ -25,7 +25,7 @@
 In challenges, trophies will spawn instead of chests.
 
 Mod Config Menu can be used to guarantee that the void portal spawns in the Chest and Dark Room. Otherwise, the normal game probability applies. You can also choose to apply this mod to challenges.</description>
-    <version>1.1</version>
+    <version>1.2</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Floors"/>
