@@ -97,13 +97,19 @@ end
 
 function mod:spawnTrapdoor(pos)
   local level = game:GetLevel()
+  local room = level:GetCurrentRoom()
   
   if level:IsAltStage() then
     if #Isaac.FindByType(EntityType.ENTITY_EFFECT, EffectVariant.HEAVEN_LIGHT_DOOR, 0, false, false) == 0 then
       Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.HEAVEN_LIGHT_DOOR, 0, pos, Vector.Zero, nil)
     end
   else
-    Isaac.GridSpawn(GridEntityType.GRID_TRAPDOOR, 0, pos, true)
+    local trapdoor = Isaac.GridSpawn(GridEntityType.GRID_TRAPDOOR, 0, pos, true)
+    if trapdoor:GetType() ~= GridEntityType.GRID_TRAPDOOR then -- deal with reversed tower card which might have spawned a rock here
+      room:RemoveGridEntity(room:GetGridIndex(pos), 0, false)
+      room:Update()
+      Isaac.GridSpawn(GridEntityType.GRID_TRAPDOOR, 0, pos, true)
+    end
   end
 end
 
