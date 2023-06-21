@@ -68,7 +68,7 @@ function mod:onPickupInit(pickup)
     mod:spawnTrapdoor(room:GetGridPosition(trapdoorIdx))
     mod.maybeSpawnVoidPortal = true -- the game might spawn in a void portal, but it hasn't happened yet
   elseif mod:isDelirium() then
-    local pos = room:GetGridPosition(room:GetGridIndex(pickup.Position) + (2 * 28)) -- 2 spaces below chest
+    local pos = room:GetGridPosition(room:GetGridIndex(pickup.Position) + (2 * room:GetGridWidth())) -- 2 spaces below chest
     mod:spawnVoidPortal(pos)
   end
 end
