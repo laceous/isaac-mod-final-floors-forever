@@ -106,9 +106,21 @@ function mod:spawnTrapdoor(pos)
   else
     local trapdoor = Isaac.GridSpawn(GridEntityType.GRID_TRAPDOOR, 0, pos, true)
     if trapdoor:GetType() ~= GridEntityType.GRID_TRAPDOOR then -- deal with reversed tower card which might have spawned a rock here
-      room:RemoveGridEntity(room:GetGridIndex(pos), 0, false)
-      room:Update()
+      mod:removeGridEntity(room:GetGridIndex(pos), 0, false, true)
       Isaac.GridSpawn(GridEntityType.GRID_TRAPDOOR, 0, pos, true)
+    end
+  end
+end
+
+function mod:removeGridEntity(gridIdx, pathTrail, keepDecoration, update)
+  local room = game:GetRoom()
+  
+  if REPENTOGON then
+    room:RemoveGridEntityImmediate(gridIdx, pathTrail, keepDecoration)
+  else
+    room:RemoveGridEntity(gridIdx, pathTrail, keepDecoration)
+    if update then
+      room:Update()
     end
   end
 end
