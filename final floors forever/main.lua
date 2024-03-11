@@ -2,10 +2,12 @@ local mod = RegisterMod('Final Floors Forever', 1)
 local json = require('json')
 local game = Game()
 
+mod.onGameStartHasRun = false
 mod.maybeSpawnVoidPortal = false
 
 mod.state = {}
 mod.state.applyToChallenges = false
+mod.state.trapdoorOverChest = false
 mod.state.guaranteeVoidPortal = false
 
 function mod:onGameStart()
@@ -13,18 +15,20 @@ function mod:onGameStart()
     local _, state = pcall(json.decode, mod:LoadData())
     
     if type(state) == 'table' then
-      if type(state.applyToChallenges) == 'boolean' then
-        mod.state.applyToChallenges = state.applyToChallenges
-      end
-      if type(state.guaranteeVoidPortal) == 'boolean' then
-        mod.state.guaranteeVoidPortal = state.guaranteeVoidPortal
+      for _, v in ipairs({ 'applyToChallenges', 'trapdoorOverChest', 'guaranteeVoidPortal' }) do
+        if type(state[v]) == 'boolean' then
+          mod.state[v] = state[v]
+        end
       end
     end
   end
+  
+  mod.onGameStartHasRun = true
 end
 
 function mod:onGameExit()
   mod:save()
+  mod.onGameStartHasRun = false
   mod.maybeSpawnVoidPortal = false
 end
 
@@ -53,6 +57,10 @@ end
 
 -- filtered to PICKUP_BIGCHEST and PICKUP_TROPHY
 function mod:onPickupInit(pickup)
+  if not mod.onGameStartHasRun then
+    return
+  end
+  
   if game:IsGreedMode() or (not mod.state.applyToChallenges and mod:isAnyChallenge()) then
     return
   end
@@ -60,7 +68,12 @@ function mod:onPickupInit(pickup)
   local level = game:GetLevel()
   local room = level:GetCurrentRoom()
   
-  if mod:isBlueBabyOrTheLamb() then
+  if mod:isIsaacOrSatan() then
+    if mod.state.trapdoorOverChest and room:GetFrameCount() > -1 then
+      pickup:Remove()
+      mod:spawnTrapdoor(pickup.Position)
+    end
+  elseif mod:isBlueBabyOrTheLamb() then
     local chestIdx = level:IsAltStage() and 66 or 68
     local trapdoorIdx = level:IsAltStage() and 68 or 66
     
@@ -129,6 +142,15 @@ function mod:isAnyChallenge()
   return Isaac.GetChallenge() ~= Challenge.CHALLENGE_NULL
 end
 
+function mod:isIsaacOrSatan()
+  local level = game:GetLevel()
+  local roomDesc = level:GetCurrentRoomDesc()
+  
+  return level:GetStage() == LevelStage.STAGE5 and
+         roomDesc.Data.Type == RoomType.ROOM_BOSS and
+         roomDesc.GridIndex >= 0
+end
+
 function mod:isBlueBabyOrTheLamb()
   local level = game:GetLevel()
   local roomDesc = level:GetCurrentRoomDesc()
@@ -153,42 +175,31 @@ function mod:setupModConfigMenu()
   for _, v in ipairs({ 'Settings' }) do
     ModConfigMenu.RemoveSubcategory(mod.Name, v)
   end
-  ModConfigMenu.AddSetting(
-    mod.Name,
-    'Settings',
-    {
-      Type = ModConfigMenu.OptionType.BOOLEAN,
-      CurrentSetting = function()
-        return mod.state.applyToChallenges
-      end,
-      Display = function()
-        return (mod.state.applyToChallenges and 'Apply' or 'Do not apply') .. ' to challenges'
-      end,
-      OnChange = function(b)
-        mod.state.applyToChallenges = b
-        mod:save()
-      end,
-      Info = { 'Should this mod be applied to challenges?' }
-    }
-  )
-  ModConfigMenu.AddSetting(
-    mod.Name,
-    'Settings',
-    {
-      Type = ModConfigMenu.OptionType.BOOLEAN,
-      CurrentSetting = function()
-        return mod.state.guaranteeVoidPortal
-      end,
-      Display = function()
-        return (mod.state.guaranteeVoidPortal and 'Guarantee' or 'Do not guarantee') .. ' void portal'
-      end,
-      OnChange = function(b)
-        mod.state.guaranteeVoidPortal = b
-        mod:save()
-      end,
-      Info = { 'Do you want to guarantee the void portal', 'after defeating ??? or The Lamb?' }
-    }
-  )
+  for _, v in ipairs({
+                      { field = 'applyToChallenges'  , txtTrue = 'Apply to challenges'  , txtFalse = 'Do not apply to challenges'  , info = { 'Should this mod be applied to challenges?' } },
+                      { field = 'trapdoorOverChest'  , txtTrue = 'Spawn trapdoor'       , txtFalse = 'Do not spawn trapdoor'       , info = { 'Do you want to spawn a trapdoor rather than', 'a chest after defeating Isaac or Satan?' } },
+                      { field = 'guaranteeVoidPortal', txtTrue = 'Guarantee void portal', txtFalse = 'Do not guarantee void portal', info = { 'Do you want to guarantee the void portal', 'after defeating ??? or The Lamb?' } },
+                    })
+  do
+    ModConfigMenu.AddSetting(
+      mod.Name,
+      'Settings',
+      {
+        Type = ModConfigMenu.OptionType.BOOLEAN,
+        CurrentSetting = function()
+          return mod.state[v.field]
+        end,
+        Display = function()
+          return mod.state[v.field] and v.txtTrue or v.txtFalse
+        end,
+        OnChange = function(b)
+          mod.state[v.field] = b
+          mod:save()
+        end,
+        Info = v.info
+      }
+    )
+  end
 end
 -- end ModConfigMenu --
 

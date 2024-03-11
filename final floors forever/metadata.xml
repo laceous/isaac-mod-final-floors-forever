@@ -24,8 +24,10 @@
 
 In challenges, trophies will spawn instead of chests.
 
-Mod Config Menu can be used to guarantee that the void portal spawns in the Chest and Dark Room. Otherwise, the normal game probability applies. You can also choose to apply this mod to challenges.</description>
-    <version>1.7</version>
+Mod Config Menu can be used to guarantee that the void portal spawns in the Chest and Dark Room. Otherwise, the normal game probability applies. You can also choose to apply this mod to challenges.
+
+Update: There's a new option that will let you spawn a trapdoor instead of a chest after Isaac/Satan which means that the polaroid/negative won't be required.</description>
+    <version>1.8</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Floors"/>
