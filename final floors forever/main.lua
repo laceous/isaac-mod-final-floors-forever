@@ -102,7 +102,14 @@ end
 
 function mod:spawnVoidPortal(pos)
   if not mod:hasVoidPortal() then
-    local portal = Isaac.GridSpawn(GridEntityType.GRID_TRAPDOOR, 1, Isaac.GetFreeNearPosition(pos, 3), true)
+    local room = game:GetRoom()
+    
+    local portal = Isaac.GridSpawn(GridEntityType.GRID_TRAPDOOR, 1, pos, true)
+    if portal:GetType() ~= GridEntityType.GRID_TRAPDOOR then
+      mod:removeGridEntity(room:GetGridIndex(pos), 0, false, true)
+      portal = Isaac.GridSpawn(GridEntityType.GRID_TRAPDOOR, 1, pos, true)
+    end
+    
     portal.VarData = 1
     portal:GetSprite():Load('gfx/grid/voidtrapdoor.anm2', true)
   end
