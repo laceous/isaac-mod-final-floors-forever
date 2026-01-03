@@ -4,18 +4,20 @@ local game = Game()
 
 mod.onGameStartHasRun = false
 mod.maybeSpawnVoidPortal = false
+mod.stateMegaSatanDoorOpened = 49 -- GameStateFlag.STATE_MEGA_SATAN_DOOR_OPENED
 
 mod.state = {}
 mod.state.applyToChallenges = false
 mod.state.trapdoorOverChest = false
 mod.state.guaranteeVoidPortal = false
+mod.state.closeMegaSatanDoor = false
 
 function mod:onGameStart()
   if mod:HasData() then
     local _, state = pcall(json.decode, mod:LoadData())
     
     if type(state) == 'table' then
-      for _, v in ipairs({ 'applyToChallenges', 'trapdoorOverChest', 'guaranteeVoidPortal' }) do
+      for _, v in ipairs({ 'applyToChallenges', 'trapdoorOverChest', 'guaranteeVoidPortal', 'closeMegaSatanDoor' }) do
         if type(state[v]) == 'boolean' then
           mod.state[v] = state[v]
         end
@@ -34,6 +36,22 @@ end
 
 function mod:save()
   mod:SaveData(json.encode(mod.state))
+end
+
+function mod:onNewLevel()
+  if not REPENTANCE_PLUS then
+    return
+  end
+  
+  if game:IsGreedMode() or (not mod.state.applyToChallenges and mod:isAnyChallenge()) then
+    return
+  end
+  
+  local level = game:GetLevel()
+  
+  if level:GetStage() == LevelStage.STAGE6 and mod.state.closeMegaSatanDoor then
+    game:SetStateFlag(mod.stateMegaSatanDoorOpened, false)
+  end
 end
 
 function mod:onNewRoom()
@@ -186,6 +204,7 @@ function mod:setupModConfigMenu()
                       { field = 'applyToChallenges'  , txtTrue = 'Apply to challenges'  , txtFalse = 'Do not apply to challenges'  , info = { 'Should this mod be applied to challenges?' } },
                       { field = 'trapdoorOverChest'  , txtTrue = 'Spawn trapdoor'       , txtFalse = 'Do not spawn trapdoor'       , info = { 'Do you want to spawn a trapdoor rather than', 'a chest after defeating Isaac or Satan?' } },
                       { field = 'guaranteeVoidPortal', txtTrue = 'Guarantee void portal', txtFalse = 'Do not guarantee void portal', info = { 'Do you want to guarantee the void portal', 'after defeating ??? or The Lamb?' } },
+                      { field = 'closeMegaSatanDoor' , txtTrue = 'Close mega satan door', txtFalse = 'Do not close mega satan door', info = { 'In rep+, do you want to close the', 'Mega Satan door when looping?' } },
                     })
   do
     ModConfigMenu.AddSetting(
@@ -212,6 +231,7 @@ end
 
 mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, mod.onGameStart)
 mod:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, mod.onGameExit)
+mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, mod.onNewLevel)
 mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.onNewRoom)
 mod:AddCallback(ModCallbacks.MC_POST_UPDATE, mod.onUpdate)
 mod:AddCallback(ModCallbacks.MC_POST_PICKUP_INIT, mod.onPickupInit, PickupVariant.PICKUP_BIGCHEST)
