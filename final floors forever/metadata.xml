@@ -29,7 +29,7 @@ Mod Config Menu can be used to guarantee that the void portal spawns in the Ches
 Update: There's a new option that will let you spawn a trapdoor instead of a chest after Isaac/Satan which means that the polaroid/negative won't be required.
 
 Update x2: In rep, when you looped the Mega Satan door would re-close itself. That doesn't happen anymore in rep+. Add a new option to close the Mega Satan door for better integration with [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3637088090]Mega Satan After Full Clear[/url].</description>
-    <version>1.10</version>
+    <version>1.11</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Floors"/>
